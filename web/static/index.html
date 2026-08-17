@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>forest_ai</title>
+<link rel="stylesheet" href="/static/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🌲</text></svg>">
+<script src="/static/vendor/plotly.min.js"></script>
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">🌲</span>
+      <div>
+        <h1>forest_ai</h1>
+        <p>individual tree extraction from .las</p>
+      </div>
+    </div>
+
+    <section class="panel">
+      <label class="field-label" for="cloud">point cloud</label>
+      <select id="cloud"></select>
+      <div class="upload">
+        <input type="file" id="upload" accept=".las,.laz" hidden>
+        <button class="btn btn-ghost" id="upload-btn">upload a cloud…</button>
+        <span class="hint" id="upload-status"></span>
+      </div>
+    </section>
+
+    <div id="params"></div>
+
+    <section class="panel">
+      <label class="field-label" for="groups">structural groups</label>
+      <div class="slider-row">
+        <input type="range" id="groups" min="2" max="8" step="1" value="4">
+        <output id="groups-out">4</output>
+      </div>
+      <p class="hint">label-free clustering, a stand-in for species</p>
+      <label class="check">
+        <input type="checkbox" id="force"> recompute ground model
+      </label>
+    </section>
+
+    <div class="run-area">
+      <button class="btn btn-primary" id="run">Run pipeline</button>
+      <div class="progress" id="progress" hidden>
+        <div class="progress-bar"><span id="progress-fill"></span></div>
+        <p class="progress-msg" id="progress-msg"></p>
+      </div>
+      <p class="error" id="run-error" hidden></p>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <h2 id="title">forest_ai</h2>
+    <nav id="nav"></nav>
+  </header>
+
+  <main id="view">
+    <div class="empty">
+      <h3>Individual tree extraction from a forest point cloud</h3>
+      <p>Give it a <code>.las</code> or <code>.laz</code> file and it finds every
+         stem, splits the cloud into individual trees, and measures
+         <strong>DBH, height and crown</strong> for each one — with an explicit
+         quality flag on every measurement.</p>
+
+      <div class="requirements">
+        <h4>What it needs</h4>
+        <ul>
+          <li><strong>A ground-based scan</strong> — terrestrial or mobile laser
+              scanning, or ground-level photogrammetry. Stems have to be visible
+              at breast height.</li>
+          <li><strong>Not airborne data.</strong> A drone or aircraft cloud sees
+              the canopy from above and barely any stem, so DBH cannot be
+              measured from it at all.</li>
+          <li>Dense enough to resolve a stem cross-section — roughly
+              100 points/m² or better.</li>
+        </ul>
+        <p id="limits" class="hint"></p>
+      </div>
+
+      <p id="start-hint"><strong>Upload a cloud on the left to begin.</strong></p>
+      <div id="header-preview"></div>
+    </div>
+  </main>
+
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>

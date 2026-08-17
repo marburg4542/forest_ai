@@ -1,0 +1,18 @@
+# point clouds are far too large to bake into an image
+*.las
+*.laz
+
+# generated at runtime
+data/
+outputs/
+.cache/
+web/static/vendor/
+
+.git/
+.github/
+.claude/
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.md

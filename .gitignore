@@ -1,0 +1,28 @@
+# Point clouds: far too large for git (the development file is 663 MB, and the
+# segmented output is 248 MB). GitHub rejects anything over 100 MB.
+*.las
+*.laz
+
+# Generated at runtime
+outputs/
+data/
+.cache/
+
+# Copied out of the installed plotly package by web/vendor.py on first start
+web/static/vendor/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# Tooling / editors
+.claude/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
