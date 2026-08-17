@@ -211,17 +211,22 @@ docker build -t forest_ai .
 docker run -p 7860:7860 forest_ai
 ```
 
-Image ตั้งค่าไว้สำหรับ **Hugging Face Spaces** (`sdk: docker`, port 7860)
-บล็อก YAML ด้านบนของ `README.md` คือค่า config ของ Space
-Space แบบ CPU ฟรีให้ 2 vCPU + 16 GB RAM ซึ่งเหลือเฟือสำหรับ pipeline นี้
-แต่จะใช้เวลาไม่กี่นาทีบน 2 cores แทนที่จะเป็น ~90 วินาทีบน 8 cores
-
-วิธี deploy: สร้าง Docker Space แล้วเพิ่มเป็น remote ที่สอง
+โฮสต์ไหนที่รัน container ได้ก็ใช้ได้ทั้งหมด ส่วน `app_port: 7860`
+และบล็อก YAML ด้านบนของ `README.md` มีไว้สำหรับ **Hugging Face Spaces**
 
 ```bash
 git remote add space https://huggingface.co/spaces/<user>/<space>
 git push space main
 ```
+
+> **Hugging Face ไม่ฟรีสำหรับงานนี้แล้ว** ตั้งแต่กรกฎาคม 2026 การโฮสต์ Gradio
+> หรือ Docker Space บน `cpu-basic` แบบฟรีต้องสมัคร PRO ($9/เดือน)
+> เหลือแค่ Static Space ที่ยังฟรี ซึ่งรัน Python ไม่ได้
+> วางแผนเผื่อไว้ หรือเลือกโฮสต์อื่น — `Dockerfile` ตัวเดียวกันใช้ได้ทุกที่
+
+การประเมินสเปกสำหรับโฮสต์ใด ๆ: pipeline ใช้หน่วยความจำสูงสุดราว **700 MB RSS**
+บน point cloud 15.8 ล้านจุด ดังนั้นเครื่องที่มี RAM 512 MB **ไม่พอ**
+ส่วน CPU 2 cores จะทำให้เวลารัน ~90 วินาที (วัดบน 8 cores) กลายเป็นไม่กี่นาที
 
 ---
 

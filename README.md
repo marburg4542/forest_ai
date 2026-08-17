@@ -227,17 +227,22 @@ docker build -t forest_ai .
 docker run -p 7860:7860 forest_ai
 ```
 
-The image is set up for **Hugging Face Spaces** (`sdk: docker`, port 7860); the
-YAML block at the top of this file is the Space configuration. Free CPU Spaces
-give 2 vCPU and 16 GB RAM, which is comfortable for this pipeline, though a run
-takes a few minutes on two cores rather than ~90 s on eight.
-
-To deploy, create a Docker Space, then add it as a second remote:
+Any host that runs a container works. The `app_port: 7860` and the YAML block at
+the top of this file are there for **Hugging Face Spaces**:
 
 ```bash
 git remote add space https://huggingface.co/spaces/<user>/<space>
 git push space main
 ```
+
+> **Hugging Face is no longer free for this.** Since July 2026, hosting Gradio or
+> Docker Spaces on free `cpu-basic` requires a PRO subscription ($9/month); only
+> Static Spaces remain free, and those cannot run Python. Plan accordingly, or
+> pick another host — the same `Dockerfile` runs anywhere.
+
+Sizing for any host: the pipeline peaks around **700 MB of RSS** on a 15.8 M
+point cloud, so a 512 MB instance is not enough. Two vCPUs turn the ~90 s run
+(measured on 8 cores) into a few minutes.
 
 ---
 
