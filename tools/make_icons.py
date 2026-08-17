@@ -87,6 +87,13 @@ def main() -> None:
     draw_icon(64).save(p)
     written.append(p)
 
+    # Windows shortcuts need a real .ico; one file holding every size the shell
+    # asks for (taskbar, alt-tab, explorer at each zoom level)
+    p = OUT / "forest_ai.ico"
+    draw_icon(256).save(p, sizes=[(16, 16), (24, 24), (32, 32), (48, 48),
+                                  (64, 64), (128, 128), (256, 256)])
+    written.append(p)
+
     for p in written:
         print(f"  {p.relative_to(OUT.parent.parent.parent)}  {p.stat().st_size/1024:.1f} kB")
 

@@ -27,9 +27,14 @@ Pure NumPy/SciPy/scikit-learn. No GPU, no PDAL, no Open3D, no build step.
 ```bash
 pip install -r requirements.txt
 
-python serve.py           # web interface at http://localhost:8000
+python launch.py          # start the server if needed, then open the interface
 python run_pipeline.py    # or the command line, writing to outputs/
 ```
+
+On Windows, double-clicking **`forest_ai.bat`** does the same thing, and
+`python tools/make_shortcuts.py` puts it on the Desktop and Start Menu with an
+icon. `python serve.py` still runs the server directly if you want a console to
+watch.
 
 Both call the same `forest_ai/pipeline.py`, so the numbers are always identical.
 A cold run on 15.8 M points takes about 90 s on 8 cores; re-runs reuse the
@@ -182,19 +187,44 @@ The 3-D view shows a random sample — 150 k of 6.5 M points by default. That is
 enough to judge whether segmentation is sensible; for full resolution open the
 exported `.las` in CloudCompare and colour by `tree_id`.
 
-### Installing it as a desktop app
+### Using it like a desktop app
 
-The interface is a PWA, so the browser can install it: start the server, open
-`http://localhost:8000`, and use **Install as an app** in the sidebar (or the
-browser's own install control). It then opens in its own window with its own
-icon and no address bar.
+A browser cannot start a local process, so an installed web app can never bring
+its own backend up. `launch.py` is the missing half — it starts the server if it
+is not already running, waits for it, and opens the interface:
+
+```bash
+python launch.py                    # start (if needed) and open
+python launch.py --stop             # stop the background server
+python launch.py --status           # running? on what pid? where is the log?
+python launch.py --port 8080        # if something else owns 8000
+python launch.py --install-startup  # start it automatically at login
+```
+
+Running it twice is harmless: it notices the existing server and just opens the
+window. The server is spawned detached and windowless, so nothing is left
+hanging around, and its output goes to `.cache/server.log` — without that a
+crash during startup would be invisible.
+
+On Windows:
+
+```
+forest_ai.bat                       double-click to start and open
+stop.bat                            double-click to stop
+python tools/make_shortcuts.py      Desktop + Start Menu shortcuts, with icon
+```
+
+The interface is also a PWA, so the browser can install it: open the app and use
+**Install as an app** in the sidebar. It then gets its own window, icon and no
+address bar. Combine that with `--install-startup` and clicking the installed
+icon is all you ever do.
 
 Two things worth knowing:
 
 - **It still needs the server.** Every measurement happens in the Python
-  process, so `python serve.py` has to be running. The worker caches the
-  interface, not the computation — open the app without the server and you get
-  a page telling you which command to run rather than a browser error.
+  process. The service worker caches the interface, not the computation — open
+  the app without the server and you get a page naming the command to run,
+  rather than a browser error.
 - **Installing only works over `localhost`.** Browsers require a secure context
   for service workers, and plain `http://` to a LAN address is not one, so
   reaching the app from another machine works but cannot be installed.
@@ -318,7 +348,8 @@ forest_ai/          the pipeline — no web framework anywhere in here
 web/                a thin HTTP layer over pipeline.py
   server.py  sessions.py  params.py  vendor.py
   static/           index.html, app.css, app.js, sw.js, manifest, icons
-tools/make_icons.py generates the PWA icon set
+tools/              make_icons.py, make_shortcuts.py
+launch.py           start-if-needed launcher; forest_ai.bat / stop.bat wrap it
 serve.py  run_pipeline.py  evaluate_against_reference.py  Dockerfile
 ```
 
