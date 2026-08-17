@@ -13,7 +13,9 @@ so both produce identical numbers.
 from __future__ import annotations
 
 import argparse
+import glob
 import json
+import os
 
 from forest_ai import pipeline
 from forest_ai.config import Config
@@ -31,6 +33,18 @@ def main():
     ap.add_argument("--groups", type=int, default=4,
                     help="number of structural groups for the label-free clustering")
     args = ap.parse_args()
+
+    # --las defaults to a name relative to the working directory, so running
+    # this from somewhere else is an easy mistake; say so instead of failing
+    # with a stat() traceback four frames deep
+    if not os.path.isfile(args.las):
+        found = sorted(glob.glob("*.las") + glob.glob("*.laz"))
+        raise SystemExit(
+            f"point cloud not found: {args.las}\n"
+            f"  working directory: {os.getcwd()}\n"
+            + (f"  clouds here: {', '.join(found)}\n" if found else
+               "  no .las/.laz files here\n")
+            + "  cd into the project directory first, or pass --las with a full path.")
 
     print("=" * 72)
     print(f"forest_ai pipeline | {args.las}")
