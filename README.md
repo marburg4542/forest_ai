@@ -182,6 +182,27 @@ The 3-D view shows a random sample — 150 k of 6.5 M points by default. That is
 enough to judge whether segmentation is sensible; for full resolution open the
 exported `.las` in CloudCompare and colour by `tree_id`.
 
+### Installing it as a desktop app
+
+The interface is a PWA, so the browser can install it: start the server, open
+`http://localhost:8000`, and use **Install as an app** in the sidebar (or the
+browser's own install control). It then opens in its own window with its own
+icon and no address bar.
+
+Two things worth knowing:
+
+- **It still needs the server.** Every measurement happens in the Python
+  process, so `python serve.py` has to be running. The worker caches the
+  interface, not the computation — open the app without the server and you get
+  a page telling you which command to run rather than a browser error.
+- **Installing only works over `localhost`.** Browsers require a secure context
+  for service workers, and plain `http://` to a LAN address is not one, so
+  reaching the app from another machine works but cannot be installed.
+
+The ~5 MB shell (mostly `plotly.min.js`) is precached, so start-up is instant.
+Nothing under `/api/` is ever cached — those responses are per-session and
+change with every run.
+
 ### REST API
 
 The front-end talks to the backend over plain REST, so scripts and QGIS can use
@@ -295,7 +316,9 @@ forest_ai/          the pipeline — no web framework anywhere in here
   qc.py             the five matplotlib QC figures
   webviz.py         interactive plotly figures
 web/                a thin HTTP layer over pipeline.py
-  server.py  sessions.py  params.py  vendor.py  static/
+  server.py  sessions.py  params.py  vendor.py
+  static/           index.html, app.css, app.js, sw.js, manifest, icons
+tools/make_icons.py generates the PWA icon set
 serve.py  run_pipeline.py  evaluate_against_reference.py  Dockerfile
 ```
 

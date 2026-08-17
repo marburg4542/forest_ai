@@ -4,8 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>forest_ai</title>
+<meta name="description" content="Find every stem in a forest point cloud and measure DBH, height and crown per tree.">
 <link rel="stylesheet" href="/static/app.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🌲</text></svg>">
+<link rel="icon" type="image/png" href="/static/icons/favicon.png">
+<link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#1a7f37">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="forest_ai">
 <script src="/static/vendor/plotly.min.js"></script>
 </head>
 <body>
@@ -45,6 +51,7 @@
     </section>
 
     <div class="run-area">
+      <button class="btn btn-ghost install" id="install" hidden>Install as an app</button>
       <button class="btn btn-primary" id="run">Run pipeline</button>
       <div class="progress" id="progress" hidden>
         <div class="progress-bar"><span id="progress-fill"></span></div>

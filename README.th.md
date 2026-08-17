@@ -167,6 +167,24 @@ Backend เป็น FastAPI, frontend เป็น HTML/CSS/JS ธรรมด�
 พอสำหรับตรวจว่าการแยกต้นสมเหตุสมผลไหม ถ้าต้องการความละเอียดเต็ม
 ให้เปิดไฟล์ `.las` ที่ export ออกมาใน CloudCompare แล้วเลือก scalar field `tree_id`
 
+### ติดตั้งเป็นแอปบนเครื่อง
+
+หน้าเว็บเป็น PWA เบราว์เซอร์จึงติดตั้งเป็นแอปได้ — เปิดเซิร์ฟเวอร์ ไปที่
+`http://localhost:8000` แล้วกด **Install as an app** ในแถบซ้าย
+(หรือใช้ปุ่มติดตั้งของเบราว์เซอร์เอง) จากนั้นจะเปิดเป็นหน้าต่างของตัวเอง
+มีไอคอนของตัวเอง ไม่มีแถบที่อยู่
+
+สองเรื่องที่ต้องรู้:
+
+- **ยังต้องเปิดเซิร์ฟเวอร์อยู่ดี** การคำนวณทุกอย่างอยู่ในโปรเซส Python
+  ดังนั้น `python serve.py` ต้องรันอยู่ service worker แคชแค่ตัวหน้าเว็บ ไม่ได้แคชการคำนวณ
+  ถ้าเปิดแอปตอนเซิร์ฟเวอร์ไม่ได้รัน จะขึ้นหน้าบอกว่าต้องรันคำสั่งอะไร แทนที่จะขึ้น error ของเบราว์เซอร์
+- **ติดตั้งได้เฉพาะผ่าน `localhost`** เบราว์เซอร์บังคับว่า service worker ต้องอยู่ใน secure context
+  ซึ่ง `http://` ไปยัง IP ในวง LAN ไม่นับ เครื่องอื่นจึงเปิดใช้ได้แต่ติดตั้งเป็นแอปไม่ได้
+
+ตัวหน้าเว็บขนาด ~5 MB (ส่วนใหญ่คือ `plotly.min.js`) ถูก precache ไว้ เปิดครั้งต่อไปจึงขึ้นทันที
+ส่วนทุกอย่างใต้ `/api/` ไม่เคยถูกแคชเลย เพราะเป็นข้อมูลเฉพาะ session และเปลี่ยนทุกครั้งที่รัน
+
 ### REST API
 
 หน้าเว็บคุยกับ backend ผ่าน REST ล้วน ๆ เรียกจากสคริปต์หรือ QGIS ได้เหมือนกัน
@@ -278,7 +296,9 @@ forest_ai/          ตัว pipeline — ไม่มี web framework อย�
   qc.py             รูป QC 5 รูป (matplotlib)
   webviz.py         กราฟ interactive (plotly)
 web/                ชั้น HTTP บาง ๆ ครอบ pipeline.py
-  server.py  sessions.py  params.py  vendor.py  static/
+  server.py  sessions.py  params.py  vendor.py
+  static/           index.html, app.css, app.js, sw.js, manifest, icons
+tools/make_icons.py สร้างชุดไอคอนของ PWA
 serve.py  run_pipeline.py  evaluate_against_reference.py  Dockerfile
 ```
 

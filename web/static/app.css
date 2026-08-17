@@ -179,6 +179,14 @@ details.group > div { padding: 0 12px 12px; }
 .btn-primary:hover:not(:disabled) { background: #14682c; }
 
 .btn-ghost { width: 100%; font-size: 12.5px; padding: 7px 10px; }
+
+.btn.install {
+  margin-bottom: 8px;
+  border-style: dashed;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.btn.install:hover:not(:disabled) { background: var(--accent-soft); }
 .btn-sm { padding: 6px 11px; font-size: 12.5px; }
 
 /* -------------------------------------------------------------- progress */

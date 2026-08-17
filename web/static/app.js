@@ -749,8 +749,54 @@ RENDER['QC figures'] = async (root) => {
   });
 };
 
+/* -------------------------------------------------------------------- pwa */
+
+/** Register the service worker and wire up the install button.
+ *  Only runs in a secure context: localhost counts, but reaching the app over
+ *  the LAN by plain http://192.168.x.x does not, so the button simply never
+ *  appears there. */
+function setupPWA() {
+  if ('serviceWorker' in navigator && window.isSecureContext) {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      .catch(err => console.warn('service worker registration failed:', err));
+  }
+
+  let prompt = null;
+  const btn = $('#install');
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();           // show it in our own UI instead of the browser's
+    prompt = e;
+    btn.hidden = false;
+  });
+  btn.addEventListener('click', async () => {
+    if (!prompt) return;
+    btn.hidden = true;
+    prompt.prompt();
+    await prompt.userChoice;
+    prompt = null;
+  });
+  window.addEventListener('appinstalled', () => { btn.hidden = true; });
+}
+
+/** The whole interface is useless without the Python process behind it, so say
+ *  so plainly rather than leaving a page of failed requests. */
+function showServerDown(err) {
+  $('#run').disabled = true;
+  html($('#view'), `
+    <div class="empty">
+      <h3>The forest_ai server is not running</h3>
+      <p>This window is the interface only — every measurement happens in the
+         Python process, so it has to be started first.</p>
+      <pre class="code">cd &lt;the forest_ai folder&gt;
+python serve.py</pre>
+      <p class="hint">Then reload this window. (${esc(err?.message || 'connection failed')})</p>
+      <p><button class="btn btn-sm" onclick="location.reload()">Reload</button></p>
+    </div>`);
+}
+
 /* ------------------------------------------------------------------ init */
 async function init() {
+  setupPWA();
   $('#groups').addEventListener('input', e => { $('#groups-out').textContent = e.target.value; });
   $('#run').addEventListener('click', startRun);
   $('#cloud').addEventListener('change', () => { if (!state.summary) showHeaderPreview(); });
@@ -776,12 +822,18 @@ async function init() {
     } catch (err) { $('#upload-status').textContent = err.message; }
   });
 
-  await Promise.all([loadServerConfig(), loadClouds(), loadParams()]);
+  try {
+    await Promise.all([loadServerConfig(), loadClouds(), loadParams()]);
 
-  // a result may already exist from an earlier browser session
-  const job = await getJSON('/api/job');
-  if (job.state === 'running') { $('#run').disabled = true; $('#progress').hidden = false; poll(); }
-  else if (job.has_result) { await onResultReady(job.las); }
+    // a result may already exist from an earlier browser session
+    const job = await getJSON('/api/job');
+    if (job.state === 'running') { $('#run').disabled = true; $('#progress').hidden = false; poll(); }
+    else if (job.has_result) { await onResultReady(job.las); }
+  } catch (e) {
+    // with the worker installed the shell loads from cache even when the
+    // backend is down, which is exactly when this branch matters
+    showServerDown(e);
+  }
 }
 
 init();

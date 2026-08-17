@@ -113,6 +113,22 @@ def index():
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
 
+# A service worker can only control pages within its own path, so it has to be
+# served from the root rather than from /static/ where the file actually lives.
+@app.get("/sw.js", include_in_schema=False)
+def service_worker():
+    return FileResponse(os.path.join(STATIC, "sw.js"),
+                        media_type="application/javascript",
+                        headers={"Cache-Control": "no-cache",
+                                 "Service-Worker-Allowed": "/"})
+
+
+@app.get("/manifest.webmanifest", include_in_schema=False)
+def manifest():
+    return FileResponse(os.path.join(STATIC, "manifest.webmanifest"),
+                        media_type="application/manifest+json")
+
+
 @app.get("/api/config")
 def api_config():
     """What the deployment allows, so the UI can describe itself accurately."""

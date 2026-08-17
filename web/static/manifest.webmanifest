@@ -1,0 +1,18 @@
+{
+  "name": "forest_ai — tree extraction from point clouds",
+  "short_name": "forest_ai",
+  "description": "Find every stem in a forest point cloud and measure DBH, height and crown per tree.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#14311f",
+  "theme_color": "#1a7f37",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    { "src": "/static/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/static/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/static/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
